@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: perspectives
+server:
+  port: 8082
+
+
+---
+spring:
+  profiles: docker-compose
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+
+server:
+  port: 8080
+
+axon:
+  axonserver:
+    servers: axonserver
