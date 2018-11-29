@@ -4,6 +4,8 @@ import com.cqrs.projection.mongo.server.model.BankAccount;
 import com.cqrs.projection.mongo.server.repository.BankAccountRepository;
 import org.axonframework.config.EventProcessingConfiguration;
 import org.axonframework.eventhandling.TrackingEventProcessor;
+import org.axonframework.queryhandling.QueryBus;
+import org.axonframework.queryhandling.QueryGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class BankAccountService {
 
     @Autowired
     private BankAccountRepository repository;
+
+    @Autowired
+    private QueryGateway queryGateway;
 
     @Autowired
     private EventProcessingConfiguration epc;

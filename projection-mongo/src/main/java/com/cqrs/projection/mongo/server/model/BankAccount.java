@@ -3,10 +3,11 @@ package com.cqrs.projection.mongo.server.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Document
-public class BankAccount {
+public class BankAccount implements Serializable {
 
     @Id
     private String id;
@@ -46,5 +47,14 @@ public class BankAccount {
             return new BankAccount();
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", balance=" + balance +
+                '}';
     }
 }

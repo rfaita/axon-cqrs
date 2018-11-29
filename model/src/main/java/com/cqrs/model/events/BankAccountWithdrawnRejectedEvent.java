@@ -2,20 +2,17 @@ package com.cqrs.model.events;
 
 import java.math.BigDecimal;
 
-public class BankAccountBalanceUpdatedEvent {
+public class BankAccountWithdrawnRejectedEvent {
 
     private String id;
     private String transactionId;
-    private BigDecimal balance;
 
-
-    public BankAccountBalanceUpdatedEvent() {
+    public BankAccountWithdrawnRejectedEvent() {
     }
 
-    public BankAccountBalanceUpdatedEvent(String id, String transactionId, BigDecimal balance) {
+    public BankAccountWithdrawnRejectedEvent(String id, String transactionId) {
         this.id = id;
         this.transactionId = transactionId;
-        this.balance = balance;
     }
 
     public String getId() {
@@ -26,14 +23,6 @@ public class BankAccountBalanceUpdatedEvent {
         this.id = id;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
     public String getTransactionId() {
         return transactionId;
     }
@@ -41,4 +30,5 @@ public class BankAccountBalanceUpdatedEvent {
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
+
 }

@@ -2,6 +2,10 @@ spring:
   application:
     name: commands
 
+#axon:
+#  serializer:
+#    general: JACKSON
+
 ---
 spring:
   profiles: docker-compose

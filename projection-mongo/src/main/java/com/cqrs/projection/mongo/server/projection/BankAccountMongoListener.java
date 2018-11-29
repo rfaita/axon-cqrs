@@ -1,4 +1,4 @@
-package com.cqrs.projection.mongo.server.view;
+package com.cqrs.projection.mongo.server.projection;
 
 import com.cqrs.model.events.BankAccountBalanceUpdatedEvent;
 import com.cqrs.model.events.BankAccountCreatedEvent;
@@ -7,10 +7,15 @@ import com.cqrs.projection.mongo.server.model.BankAccount;
 import com.cqrs.projection.mongo.server.service.BankAccountService;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.queryhandling.QueryHandler;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.function.Predicate;
 
 @Component
 @ProcessingGroup("BankAccountMongoListener")
@@ -24,6 +29,7 @@ public class BankAccountMongoListener {
     @EventHandler
     public void on(BankAccountCreatedEvent ev) {
         LOGGER.info("View Handling {} event: {}", ev.getClass().getSimpleName(), ev);
+
 
         service.save(BankAccount.Builder
                 .create()
@@ -47,6 +53,7 @@ public class BankAccountMongoListener {
 
             LOGGER.warn("Bank Account not found {}", event.getId());
         }
+
 
     }
 

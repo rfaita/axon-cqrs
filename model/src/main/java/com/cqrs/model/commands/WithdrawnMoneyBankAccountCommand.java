@@ -4,21 +4,19 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.math.BigDecimal;
 
-public class RemoveMoneyBankAccountCommand {
+public class WithdrawnMoneyBankAccountCommand {
 
     @TargetAggregateIdentifier
     private String id;
+    private String transactionId;
     private BigDecimal value;
 
-    public RemoveMoneyBankAccountCommand() {
+    public WithdrawnMoneyBankAccountCommand() {
     }
 
-    public RemoveMoneyBankAccountCommand(BigDecimal value) {
-        this.value = value;
-    }
-
-    public RemoveMoneyBankAccountCommand(String id, BigDecimal value) {
+    public WithdrawnMoneyBankAccountCommand(String id, String transactionId, BigDecimal value) {
         this.id = id;
+        this.transactionId = transactionId;
         this.value = value;
     }
 
@@ -28,6 +26,14 @@ public class RemoveMoneyBankAccountCommand {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public BigDecimal getValue() {

@@ -1,13 +1,15 @@
 package com.cqrs.commands.server.controller;
 
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.cqrs.model.commands.AddMoneyBankAccountCommand;
 import com.cqrs.model.commands.CreateBankAccountCommand;
 import com.cqrs.model.commands.RemoveBankAccountCommand;
-import com.cqrs.model.commands.RemoveMoneyBankAccountCommand;
+import com.cqrs.model.commands.WithdrawnMoneyBankAccountCommand;
+import com.cqrs.model.commands.transfer.RequestTransferCommand;
 import com.cqrs.model.dto.BankAccountDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.slf4j.Logger;
@@ -41,8 +43,8 @@ public class BankAccountController {
     }
 
     @DeleteMapping("/{id}/remove")
-    public CompletableFuture<RemoveMoneyBankAccountCommand> removeMoney(@PathVariable String id, @RequestBody BankAccountDTO dto) {
-        RemoveMoneyBankAccountCommand command = new RemoveMoneyBankAccountCommand(id, dto.getBalance());
+    public CompletableFuture<WithdrawnMoneyBankAccountCommand> removeMoney(@PathVariable String id, @RequestBody BankAccountDTO dto) {
+        WithdrawnMoneyBankAccountCommand command = new WithdrawnMoneyBankAccountCommand(id, UUID.randomUUID().toString(), dto.getBalance());
         LOGGER.info("Executing command: {}", command);
         return commandGateway.send(command);
 
@@ -53,5 +55,15 @@ public class BankAccountController {
         RemoveBankAccountCommand command = new RemoveBankAccountCommand(id);
         LOGGER.info("Executing command: {}", command);
         return commandGateway.send(command);
+    }
+
+    @PostMapping("/transfer/{sourceId}/{destinationId}")
+    public RequestTransferCommand transfer(@PathVariable String sourceId, @PathVariable String destinationId) {
+        RequestTransferCommand command
+                = new RequestTransferCommand(UUID.randomUUID().toString(), sourceId, destinationId, new BigDecimal(100));
+        LOGGER.info("Executing command: {}", command);
+        commandGateway.send(command);
+
+        return command;
     }
 }

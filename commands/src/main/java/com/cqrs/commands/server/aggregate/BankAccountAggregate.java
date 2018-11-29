@@ -3,10 +3,11 @@ package com.cqrs.commands.server.aggregate;
 import com.cqrs.model.commands.AddMoneyBankAccountCommand;
 import com.cqrs.model.commands.CreateBankAccountCommand;
 import com.cqrs.model.commands.RemoveBankAccountCommand;
-import com.cqrs.model.commands.RemoveMoneyBankAccountCommand;
+import com.cqrs.model.commands.WithdrawnMoneyBankAccountCommand;
 import com.cqrs.model.events.BankAccountBalanceUpdatedEvent;
 import com.cqrs.model.events.BankAccountCreatedEvent;
 import com.cqrs.model.events.BankAccountRemovedEvent;
+import com.cqrs.model.events.BankAccountWithdrawnRejectedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -62,18 +63,24 @@ public class BankAccountAggregate {
         Assert.hasLength(cmd.getId(), "Bank Id should not be empty or null.");
         Assert.notNull(cmd.getValue(), "Balance should not be empty or null.");
         Assert.isTrue(cmd.getValue().doubleValue() > 0d, "Value must be greater than zero.");
-        apply(new BankAccountBalanceUpdatedEvent(cmd.getId(), cmd.getValue()));
+        apply(new BankAccountBalanceUpdatedEvent(cmd.getId(), cmd.getTransactionId(), cmd.getValue()));
         LOGGER.info("Done handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
         return cmd;
     }
 
     @CommandHandler
-    public RemoveMoneyBankAccountCommand handle(RemoveMoneyBankAccountCommand cmd) {
+    public WithdrawnMoneyBankAccountCommand handle(WithdrawnMoneyBankAccountCommand cmd) {
         LOGGER.info("Handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
         Assert.hasLength(cmd.getId(), "Bank Id should not be empty or null.");
         Assert.notNull(cmd.getValue(), "Balance should not be empty or null.");
         Assert.isTrue(cmd.getValue().doubleValue() < 0d, "Value must be lower than zero.");
-        apply(new BankAccountBalanceUpdatedEvent(cmd.getId(), cmd.getValue()));
+
+        if (canWithdraw(cmd.getValue())) {
+            apply(new BankAccountBalanceUpdatedEvent(cmd.getId(), cmd.getTransactionId(), cmd.getValue()));
+        } else {
+            apply(new BankAccountWithdrawnRejectedEvent(cmd.getId(), cmd.getTransactionId()));
+        }
+
         LOGGER.info("Done handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
         return cmd;
     }
@@ -107,5 +114,9 @@ public class BankAccountAggregate {
     public void on(BankAccountRemovedEvent event) {
         markDeleted();
         LOGGER.info("Done handling {} event: {}", event.getClass().getSimpleName(), event);
+    }
+
+    private Boolean canWithdraw(BigDecimal amount) {
+        return this.balance.compareTo(amount) == 1;
     }
 }

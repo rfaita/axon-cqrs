@@ -1,9 +1,12 @@
 spring:
   application:
-    name: perspectives
+    name: projection-mongo
 server:
   port: 8082
 
+#axon:
+#  serializer:
+#    general: JACKSON
 
 ---
 spring:
