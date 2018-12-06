@@ -8,6 +8,9 @@ import com.cqrs.model.events.BankAccountBalanceUpdatedEvent;
 import com.cqrs.model.events.BankAccountCreatedEvent;
 import com.cqrs.model.events.BankAccountRemovedEvent;
 import com.cqrs.model.events.BankAccountWithdrawnRejectedEvent;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -21,6 +24,7 @@ import java.math.BigDecimal;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
 
+@Data
 @Aggregate(snapshotTriggerDefinition = "eventCountSnapshot")
 public class BankAccountAggregate {
 
@@ -30,18 +34,6 @@ public class BankAccountAggregate {
     private String id;
     private String name;
     private BigDecimal balance;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
 
     public BankAccountAggregate() {
         LOGGER.info("empty constructor invoked");
@@ -53,7 +45,11 @@ public class BankAccountAggregate {
         Assert.hasLength(cmd.getId(), "Id should not be empty or null.");
         Assert.hasLength(cmd.getName(), "Name should not be empty or null.");
 
-        apply(new BankAccountCreatedEvent(cmd.getId(), cmd.getName(), BigDecimal.ZERO));
+        apply(BankAccountCreatedEvent.builder()
+                .id(cmd.getId())
+                .name(cmd.getName())
+                .balance(BigDecimal.ZERO)
+                .build());
         LOGGER.info("Done handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
     }
 
@@ -63,7 +59,11 @@ public class BankAccountAggregate {
         Assert.hasLength(cmd.getId(), "Bank Id should not be empty or null.");
         Assert.notNull(cmd.getValue(), "Balance should not be empty or null.");
         Assert.isTrue(cmd.getValue().doubleValue() > 0d, "Value must be greater than zero.");
-        apply(new BankAccountBalanceUpdatedEvent(cmd.getId(), cmd.getTransactionId(), cmd.getValue()));
+        apply(BankAccountBalanceUpdatedEvent.builder()
+                .id(cmd.getId())
+                .transactionId(cmd.getTransactionId())
+                .balance(cmd.getValue())
+                .build());
         LOGGER.info("Done handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
         return cmd;
     }
@@ -76,9 +76,16 @@ public class BankAccountAggregate {
         Assert.isTrue(cmd.getValue().doubleValue() < 0d, "Value must be lower than zero.");
 
         if (canWithdraw(cmd.getValue())) {
-            apply(new BankAccountBalanceUpdatedEvent(cmd.getId(), cmd.getTransactionId(), cmd.getValue()));
+            apply(BankAccountBalanceUpdatedEvent.builder()
+                    .id(cmd.getId())
+                    .transactionId(cmd.getTransactionId())
+                    .balance(cmd.getValue())
+                    .build());
         } else {
-            apply(new BankAccountWithdrawnRejectedEvent(cmd.getId(), cmd.getTransactionId()));
+            apply(BankAccountWithdrawnRejectedEvent.builder()
+                    .id(cmd.getId())
+                    .transactionId(cmd.getTransactionId())
+                    .build());
         }
 
         LOGGER.info("Done handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
@@ -89,7 +96,9 @@ public class BankAccountAggregate {
     public RemoveBankAccountCommand handle(RemoveBankAccountCommand cmd) {
         LOGGER.info("Handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
         Assert.hasLength(cmd.getId(), "Id should not be empty or null.");
-        apply(new BankAccountRemovedEvent(cmd.getId()));
+        apply(BankAccountRemovedEvent.builder()
+                .id(cmd.getId())
+                .build());
         LOGGER.info("Done handling {} command: {}", cmd.getClass().getSimpleName(), cmd);
         return cmd;
     }

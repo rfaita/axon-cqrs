@@ -31,11 +31,11 @@ public class BankAccountMongoListener {
         LOGGER.info("View Handling {} event: {}", ev.getClass().getSimpleName(), ev);
 
 
-        service.save(BankAccount.Builder
-                .create()
-                .setId(ev.getId())
-                .setBalance(ev.getBalance())
-                .setName(ev.getName())
+        service.save(BankAccount.builder()
+                .id(ev.getId())
+                .balance(ev.getBalance())
+                .name(ev.getName())
+                .build()
         );
 
     }

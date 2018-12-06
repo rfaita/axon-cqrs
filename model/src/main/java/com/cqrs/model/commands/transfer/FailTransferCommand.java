@@ -1,25 +1,18 @@
 package com.cqrs.model.commands.transfer;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class FailTransferCommand {
 
     @TargetAggregateIdentifier
     private String transactionId;
-
-    public FailTransferCommand() {
-    }
-
-    public FailTransferCommand(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
 
 }

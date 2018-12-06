@@ -7,6 +7,8 @@ import com.cqrs.model.commands.transfer.FailTransferCommand;
 import com.cqrs.model.events.BankAccountBalanceUpdatedEvent;
 import com.cqrs.model.events.BankAccountWithdrawnRejectedEvent;
 import com.cqrs.model.events.transfer.TransferRequestedEvent;
+import lombok.Builder;
+import lombok.Data;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 
 @Saga
+@Data
+@Builder
 public class BankTransferSaga {
 
     @Autowired
@@ -42,14 +46,22 @@ public class BankTransferSaga {
         this.withdrawnDone = false;
 
         commandGateway.send(
-                new WithdrawnMoneyBankAccountCommand(this.sourceId, this.transactionId, this.amount.multiply(new BigDecimal(-1)))
+                WithdrawnMoneyBankAccountCommand.builder()
+                        .id(this.sourceId)
+                        .transactionId(this.transactionId)
+                        .value(this.amount.multiply(new BigDecimal(-1)))
+                        .build()
         );
     }
 
     @EndSaga
     @SagaEventHandler(associationProperty = BANK_TRANSFER_ASSOCIATION_PROPERTY)
     public void on(BankAccountWithdrawnRejectedEvent event) {
-        commandGateway.send(new FailTransferCommand(this.transactionId));
+        commandGateway.send(
+                FailTransferCommand.builder()
+                        .transactionId(this.transactionId)
+                        .build()
+        );
     }
 
     @SagaEventHandler(associationProperty = BANK_TRANSFER_ASSOCIATION_PROPERTY)
@@ -58,9 +70,19 @@ public class BankTransferSaga {
         //verify if the event come from sourceId
         if (event.getId().equals(this.sourceId)) {
             this.withdrawnDone = true;
-            commandGateway.send(new AddMoneyBankAccountCommand(this.destinationId, this.transactionId, this.amount));
+            commandGateway.send(
+                    AddMoneyBankAccountCommand.builder()
+                            .id(this.destinationId)
+                            .transactionId(this.transactionId)
+                            .value(this.amount)
+                            .build()
+            );
         } else {
-            commandGateway.send(new CompleteTransferCommand(this.transactionId));
+            commandGateway.send(
+                    CompleteTransferCommand.builder()
+                            .transactionId(this.transactionId)
+                            .build()
+            );
             SagaLifecycle.end();
         }
     }

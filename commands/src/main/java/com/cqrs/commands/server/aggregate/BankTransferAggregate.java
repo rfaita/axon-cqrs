@@ -7,6 +7,10 @@ import com.cqrs.model.commands.transfer.RequestTransferCommand;
 import com.cqrs.model.events.transfer.TransferCompletedEvent;
 import com.cqrs.model.events.transfer.TransferFailedEvent;
 import com.cqrs.model.events.transfer.TransferRequestedEvent;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -19,6 +23,7 @@ import java.math.BigDecimal;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+@Data
 @Aggregate(snapshotTriggerDefinition = "eventCountSnapshot")
 public class BankTransferAggregate {
 
@@ -31,30 +36,9 @@ public class BankTransferAggregate {
     private BigDecimal amount;
     private BankTransferStatus status;
 
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    public String getDestinationId() {
-        return destinationId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public BankTransferStatus getStatus() {
-        return status;
-    }
-
     public BankTransferAggregate() {
         LOGGER.info("empty constructor invoked");
     }
-
 
     @CommandHandler
     public BankTransferAggregate(RequestTransferCommand cmd) {
@@ -63,22 +47,28 @@ public class BankTransferAggregate {
         Assert.hasLength(cmd.getDestinationId(), "Destination Id should not be empty or null.");
         Assert.isTrue(cmd.getAmount().doubleValue() > 0d, "Amount must be greater than zero.");
 
-        apply(new TransferRequestedEvent(cmd.getTransactionId(),
-                cmd.getSourceId(),
-                cmd.getDestinationId(),
-                cmd.getAmount()));
+        apply(TransferRequestedEvent.builder()
+                .amount(cmd.getAmount())
+                .destinationId(cmd.getDestinationId())
+                .sourceId(cmd.getSourceId())
+                .transactionId(cmd.getTransactionId())
+                .build());
     }
 
     @CommandHandler
-    public  void handle(CompleteTransferCommand cmd) {
+    public void handle(CompleteTransferCommand cmd) {
         Assert.hasLength(cmd.getTransactionId(), "Transaction Id should not be empty or null.");
-        apply(new TransferCompletedEvent(cmd.getTransactionId()));
+        apply(TransferCompletedEvent.builder()
+                .transactionId(cmd.getTransactionId())
+                .build());
     }
 
     @CommandHandler
     public void handle(FailTransferCommand cmd) {
         Assert.hasLength(cmd.getTransactionId(), "Transaction Id should not be empty or null.");
-        apply(new TransferFailedEvent(cmd.getTransactionId()));
+        apply(TransferFailedEvent.builder()
+                .transactionId(cmd.getTransactionId())
+                .build());
     }
 
     @EventSourcingHandler

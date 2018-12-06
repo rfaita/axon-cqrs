@@ -1,34 +1,19 @@
 package com.cqrs.model.commands;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CreateBankAccountCommand {
 
     @TargetAggregateIdentifier
     private String id;
     private String name;
 
-    public CreateBankAccountCommand() {
-    }
-
-    public CreateBankAccountCommand(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
