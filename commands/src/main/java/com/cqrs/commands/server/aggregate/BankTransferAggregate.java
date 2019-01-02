@@ -7,10 +7,7 @@ import com.cqrs.model.commands.transfer.RequestTransferCommand;
 import com.cqrs.model.events.transfer.TransferCompletedEvent;
 import com.cqrs.model.events.transfer.TransferFailedEvent;
 import com.cqrs.model.events.transfer.TransferRequestedEvent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -23,7 +20,10 @@ import java.math.BigDecimal;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
-@Data
+@Getter
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Aggregate(snapshotTriggerDefinition = "eventCountSnapshot")
 public class BankTransferAggregate {
 
@@ -37,7 +37,7 @@ public class BankTransferAggregate {
     private BankTransferStatus status;
 
     public BankTransferAggregate() {
-        LOGGER.info("empty constructor invoked");
+        LOGGER.info("BankTransferAggregate empty constructor invoked");
     }
 
     @CommandHandler

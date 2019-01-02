@@ -28,7 +28,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<List<ErrorDTO>> exceptionHandler(AxonServerRemoteCommandHandlingException e) {
         return new ResponseEntity<>(
                 e.getExceptionDescriptions().stream()
-                        .map(s -> new ErrorDTO(null, s))
+                        .map(s -> ErrorDTO.builder().errorMessage(s).build())
                         .collect(Collectors.toList()),
                 HttpStatus.BAD_REQUEST);
     }

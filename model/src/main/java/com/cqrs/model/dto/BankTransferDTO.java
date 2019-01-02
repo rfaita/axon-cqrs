@@ -1,17 +1,20 @@
 package com.cqrs.model.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Getter
-@RequiredArgsConstructor
-@ToString
-@EqualsAndHashCode
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class BankAccountDTO {
+public class BankTransferDTO {
 
-    private String name;
-
+    private String sourceId;
+    private String destinationId;
+    private BigDecimal amount;
 
 }
