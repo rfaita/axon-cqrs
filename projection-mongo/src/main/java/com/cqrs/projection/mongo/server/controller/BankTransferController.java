@@ -2,9 +2,8 @@ package com.cqrs.projection.mongo.server.controller;
 
 
 import com.cqrs.projection.mongo.server.model.BankAccount;
-import com.cqrs.projection.mongo.server.service.BankAccountService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cqrs.projection.mongo.server.model.BankTransfer;
+import com.cqrs.projection.mongo.server.service.BankTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bank-accounts")
-public class BankAccountController {
+@RequestMapping("/bank-transfers")
+public class BankTransferController {
 
     @Autowired
-    private BankAccountService bankAccountService;
+    private BankTransferService service;
 
     @GetMapping("/replay")
     public void replay() {
-        bankAccountService.replay();
+        service.replay();
     }
 
     @GetMapping("")
-    public List<BankAccount> findAll() {
-        return bankAccountService.findAll();
+    public List<BankTransfer> findAll() {
+        return service.findAll();
 
     }
 }

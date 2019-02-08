@@ -90,7 +90,7 @@ public class BankTransferAggregate {
     }
 
     @EventSourcingHandler
-    public void on(FailTransferCommand event) {
+    public void on(TransferFailedEvent event) {
         LOGGER.info("Handling {} event: {}", event.getClass().getSimpleName(), event);
         this.status = BankTransferStatus.FAILED;
         LOGGER.info("Done handling {} event: {}", event.getClass().getSimpleName(), event);

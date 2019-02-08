@@ -1,14 +1,10 @@
 package com.cqrs.projection.mongo.server.service;
 
-import com.cqrs.projection.mongo.server.model.BankAccount;
-import com.cqrs.projection.mongo.server.repository.BankAccountRepository;
+import com.cqrs.projection.mongo.server.model.BankTransfer;
+import com.cqrs.projection.mongo.server.repository.BankTransferRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.EventProcessingConfiguration;
 import org.axonframework.eventhandling.TrackingEventProcessor;
-import org.axonframework.queryhandling.QueryBus;
-import org.axonframework.queryhandling.QueryGateway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,23 +14,20 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class BankAccountService {
+public class BankTransferService {
 
     @Autowired
-    private BankAccountRepository repository;
-
-    @Autowired
-    private QueryGateway queryGateway;
+    private BankTransferRepository repository;
 
     @Autowired
     private EventProcessingConfiguration epc;
 
-    public BankAccount save(BankAccount bankAccount) {
-        return repository.save(bankAccount);
+    public BankTransfer save(BankTransfer bankTransfer) {
+        return repository.save(bankTransfer);
     }
 
-    public BankAccount findById(String id) {
-        Optional<BankAccount> ret = repository.findById(id);
+    public BankTransfer findById(String id) {
+        Optional<BankTransfer> ret = repository.findById(id);
 
         if (ret.isPresent()) {
             return ret.get();
@@ -42,7 +35,7 @@ public class BankAccountService {
         return null;
     }
 
-    public List<BankAccount> findAll() {
+    public List<BankTransfer> findAll() {
         return repository.findAll();
     }
 
@@ -53,7 +46,7 @@ public class BankAccountService {
     public void replay() {
 
         Optional<TrackingEventProcessor> ret =
-                epc.eventProcessor("BankAccountMongoListener", TrackingEventProcessor.class);
+                epc.eventProcessor("BankTransferMongoListener", TrackingEventProcessor.class);
 
         if (ret.isPresent()) {
 

@@ -132,6 +132,6 @@ public class BankAccountAggregate {
     }
 
     private Boolean canWithdraw(BigDecimal amount) {
-        return this.balance.compareTo(amount.abs()) == 1;
+        return this.balance.compareTo(amount.abs()) >= 0;
     }
 }
